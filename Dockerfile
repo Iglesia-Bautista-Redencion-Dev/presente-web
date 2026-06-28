@@ -1,38 +1,49 @@
+# ==========================================
+# ETAPA 1: Compilación del Frontend (Node/Vite)
+# ==========================================
+FROM node:20-alpine AS frontend-builder
+
+WORKDIR /build-app
+
+# Copiar archivos de dependencias primero para aprovechar la caché de Docker
+COPY package*.json ./
+
+# Instalar todas las dependencias necesarias
+RUN npm install
+
+# Forzar herramientas de estilos necesarias para Vite/PostCSS
+RUN npm install postcss tailwindcss autoprefixer
+
+# Copiar el resto del código fuente del proyecto
+COPY . .
+
+# Compilar el frontend saltándose el chequeo estricto de tipos de TypeScript
+RUN ./node_modules/.bin/vite build
+
+# ==========================================
+# ETAPA 2: Imagen Final de Producción (PocketBase)
+# ==========================================
 FROM alpine:latest
 
-# 1. Instalar dependencias esenciales del sistema operativo
-RUN apk add --no-cache ca-certificates unzip wget nodejs npm
+# Instalar dependencias esenciales de ejecución
+RUN apk add --no-cache ca-certificates unzip wget
 
-# 2. Establecer el directorio de trabajo principal
 WORKDIR /app
 
-# 3. Descargar e instalar PocketBase
+# Descargar e instalar PocketBase de forma limpia
 ADD https://github.com/pocketbase/pocketbase/releases/download/v0.22.14/pocketbase_0.22.14_linux_amd64.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d /app/ && rm /tmp/pb.zip
 
-# 4. Copiar los archivos de dependencias primero (optimiza la caché de Docker)
-COPY package*.json ./
+# Copiar únicamente el frontend compilado desde la ETAPA 1
+# Detecta si se generó en 'dist' o 'build' y lo mueve a la carpeta pública de PocketBase
+COPY --from=frontend-builder /build-app/dist* ./pb_public/
+COPY --from=frontend-builder /build-app/build* ./pb_public/
 
-# 5. Instalar todas las dependencias del proyecto
-RUN npm install
+# Copiar las migraciones del repositorio directamente al entorno de PocketBase
+COPY ./pb_migrations ./pb_migrations
 
-# 6. Forzar la instalación de herramientas de estilos globales para evitar fallos de PostCSS
-RUN npm install postcss tailwindcss autoprefixer
-
-# 7. Copiar el resto del código fuente del repositorio
-COPY . .
-
-# 8. Compilar el frontend saltándose el chequeo estricto de tipos de TypeScript
-RUN ./node_modules/.bin/vite build
-
-# 9. Asegurar la creación de pb_public y copiar el contenido empaquetado de forma segura
-RUN mkdir -p /app/pb_public && \
-    if [ -d "dist" ]; then cp -r dist/* /app/pb_public/; \
-    elif [ -d "build" ]; then cp -r build/* /app/pb_public/; \
-    else echo "No se encontró carpeta de compilación" && exit 1; fi
-
-# 10. Exponer el puerto 3000 requerido por Dokploy
+# Exponer el puerto 3000 configurado en Dokploy
 EXPOSE 3000
 
-# 11. Arrancar PocketBase con volumen persistente y migración automática
+# Arrancar PocketBase mapeando el volumen persistente y ejecutando las migraciones automáticas
 CMD ["/app/pocketbase", "serve", "--http=0.0.0.0:3000", "--dir=/app/pb_data", "--migrationsDir=/app/pb_migrations"]
