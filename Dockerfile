@@ -17,7 +17,8 @@ COPY . .
 # 5. Compilar el frontend (Vite) para generar los archivos estáticos
 # Esto instalará tus dependencias de Node y creará la carpeta dist/ build
 RUN npm install
-RUN npm run build
+RUN ./node_modules/.bin/tsc && ./node_modules/.bin/vite build
+
 
 # 6. Mover el resultado de la compilación a la carpeta pública de PocketBase
 # PocketBase lee automáticamente 'pb_public' para servir el frontend en la raíz
