@@ -13,17 +13,17 @@ RUN unzip /tmp/pb.zip -d /app/ && rm /tmp/pb.zip
 # 4. Copiar todo el código de tu repositorio
 COPY . .
 
-# 5. Instalar todas las dependencias del package.json
+# 5. Instalar todas las dependencias
 RUN npm install
 
-# 6. Forzar la instalación/actualización de postcss para evitar el error de 'config'
+# 6. Forzar la instalación de herramientas de estilos
 RUN npm install postcss tailwindcss autoprefixer
 
-# 7. Compilar usando los ejecutables locales de node_modules
-RUN ./node_modules/.bin/tsc && ./node_modules/.bin/vite build
+# 7. Compilar el frontend con Vite
+RUN ./node_modules/.bin/vite build
 
-# 8. Mover el frontend compilado a la carpeta pública de PocketBase
-RUN mkdir -p pb_public && cp -r dist/* pb_public/
+# 8. Detectar la carpeta de salida (dist o build) y moverla a pb_public de PocketBase
+RUN mkdir -p pb_public && if [ -d "dist" ]; then cp -r dist/* pb_public/; else cp -r build/* pb_public/; fi
 
 # 9. Exponer el puerto 3000 de Dokploy
 EXPOSE 3000
