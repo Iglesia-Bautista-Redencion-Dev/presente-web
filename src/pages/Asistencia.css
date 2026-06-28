@@ -1,0 +1,165 @@
+.fecha-row {
+  margin-bottom: 16px;
+}
+
+.fecha-input {
+  font-family: var(--font-mono);
+  color-scheme: dark;
+}
+
+.asist-resumen {
+  display: flex;
+  align-items: center;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  margin-bottom: 20px;
+}
+
+.resumen-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.resumen-num {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  line-height: 1;
+}
+
+.resumen-label {
+  font-size: 11px;
+  color: var(--c-text-3);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.resumen-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--c-border);
+}
+
+.loading-center {
+  display: flex;
+  justify-content: center;
+  padding: 48px;
+}
+
+.estudiantes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.estudiante-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s, background 0.2s;
+  animation: fadeUp 0.3s ease both;
+}
+
+.estado-presente { border-color: rgba(67,233,123,0.35); background: rgba(67,233,123,0.04); }
+.estado-visita   { border-color: rgba(255,209,102,0.35); background: rgba(255,209,102,0.04); }
+.estado-ausente  { border-color: var(--c-border); }
+
+.estudiante-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  flex: 1;
+  min-width: 0;
+}
+
+.estudiante-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--c-surface2);
+  border: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text-2);
+  flex-shrink: 0;
+}
+
+.estado-presente .estudiante-avatar {
+  background: rgba(67,233,123,0.12);
+  border-color: rgba(67,233,123,0.3);
+  color: var(--c-success);
+}
+.estado-visita .estudiante-avatar {
+  background: rgba(255,209,102,0.12);
+  border-color: rgba(255,209,102,0.3);
+  color: var(--c-warning);
+}
+
+.estudiante-nombre {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--c-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.estado-btns {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.estado-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--c-border);
+  background: var(--c-surface2);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--c-text-3);
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.estado-btn:active { transform: scale(0.92); }
+
+.estado-btn-success.active {
+  background: rgba(67,233,123,0.15);
+  border-color: rgba(67,233,123,0.5);
+  color: var(--c-success);
+}
+.estado-btn-danger.active {
+  background: rgba(255,107,107,0.15);
+  border-color: rgba(255,107,107,0.5);
+  color: var(--c-accent);
+}
+.estado-btn-warning.active {
+  background: rgba(255,209,102,0.15);
+  border-color: rgba(255,209,102,0.5);
+  color: var(--c-warning);
+}
+
+.guardar-bar {
+  position: sticky;
+  bottom: 72px;
+  padding: 12px 0 4px;
+  background: linear-gradient(to top, var(--c-bg) 70%, transparent);
+}

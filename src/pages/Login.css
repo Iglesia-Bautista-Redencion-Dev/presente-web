@@ -1,0 +1,111 @@
+.login-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+}
+
+.login-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.login-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.25;
+}
+
+.login-orb-1 {
+  width: 300px;
+  height: 300px;
+  background: var(--c-primary);
+  top: -80px;
+  right: -60px;
+}
+
+.login-orb-2 {
+  width: 250px;
+  height: 250px;
+  background: #7c3aed;
+  bottom: -60px;
+  left: -80px;
+}
+
+.login-content {
+  width: 100%;
+  max-width: 360px;
+  z-index: 1;
+}
+
+.login-brand {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.login-logo {
+  font-size: 48px;
+  color: var(--c-primary);
+  margin-bottom: 12px;
+  filter: drop-shadow(0 0 16px rgba(79,124,255,0.6));
+  animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { filter: drop-shadow(0 0 16px rgba(79,124,255,0.6)); }
+  50%       { filter: drop-shadow(0 0 28px rgba(79,124,255,0.9)); }
+}
+
+.login-title {
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--c-text);
+}
+
+.login-subtitle {
+  font-size: 14px;
+  color: var(--c-text-2);
+  margin-top: 4px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.login-form {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-xl);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-md), var(--shadow-glow);
+}
+
+.login-error {
+  background: rgba(255,107,107,0.12);
+  border: 1px solid rgba(255,107,107,0.3);
+  color: var(--c-accent);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.login-btn {
+  margin-top: 8px;
+  height: 50px;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+}
+
+.login-footer {
+  text-align: center;
+  font-size: 12px;
+  color: var(--c-text-3);
+  margin-top: 24px;
+  letter-spacing: 0.04em;
+}
