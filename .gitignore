@@ -1,0 +1,22 @@
+# Dependencias
+node_modules/
+
+# Archivos de compilación
+dist/
+
+# Datos de PocketBase
+# Esto ignorará todo el directorio pb_data, pero explícitamente
+# dejaremos de ignorar las migraciones y los hooks que sí deben estar en el control de versiones.
+pb_data/
+!pb_data/pb_migrations/
+!pb_data/pb_hooks/
+
+# Archivos de desarrollo local
+.env
+.env.*
+
+# Específico de macOS
+.DS_Store
+
+# Caché de Vite
+.vite/
