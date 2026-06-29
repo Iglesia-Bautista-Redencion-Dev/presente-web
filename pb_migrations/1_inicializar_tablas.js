@@ -1,5 +1,6 @@
 /// <reference path="../pb_data/types.d.ts" />
 migrate((app) => {
+    const dao = app.dao();
 
     // 1. materias
     let materias = new Collection({
@@ -12,7 +13,7 @@ migrate((app) => {
             { name: "horario", type: "text" }
         ]
     });
-    app.save(materias);
+    dao.saveCollection(materias);
 
     // 2. grupos
     let grupos = new Collection({
@@ -24,7 +25,7 @@ migrate((app) => {
             { name: "materia", type: "relation", options: { collectionId: materias.id, maxSelect: 1 } }
         ]
     });
-    app.save(grupos);
+    dao.saveCollection(grupos);
 
     // 3. usuarios
     let usuarios = new Collection({
@@ -41,7 +42,7 @@ migrate((app) => {
             { name: "activo",      type: "bool" }
         ]
     });
-    app.save(usuarios);
+    dao.saveCollection(usuarios);
 
     // 4. estudiantes
     let estudiantes = new Collection({
@@ -58,7 +59,7 @@ migrate((app) => {
             { name: "activo",      type: "bool" }
         ]
     });
-    app.save(estudiantes);
+    dao.saveCollection(estudiantes);
 
     // 5. asistencia
     let asistencia = new Collection({
@@ -73,7 +74,7 @@ migrate((app) => {
             { name: "registrado_por", type: "relation", options: { collectionId: usuarios.id,    maxSelect: 1 } }
         ]
     });
-    app.save(asistencia);
+    dao.saveCollection(asistencia);
 
     // 6. Admin por defecto
     let adminUser = new Record(usuarios);
@@ -82,12 +83,13 @@ migrate((app) => {
     adminUser.set("nombre", "Administrador Web");
     adminUser.set("rol",    "admin");
     adminUser.set("activo", true);
-    app.save(adminUser);
+    dao.saveRecord(adminUser);
 
 }, (app) => {
-    try { let c = app.findCollectionByNameOrId("asistencia");  app.delete(c); } catch(e){}
-    try { let c = app.findCollectionByNameOrId("estudiantes"); app.delete(c); } catch(e){}
-    try { let c = app.findCollectionByNameOrId("usuarios");    app.delete(c); } catch(e){}
-    try { let c = app.findCollectionByNameOrId("grupos");      app.delete(c); } catch(e){}
-    try { let c = app.findCollectionByNameOrId("materias");    app.delete(c); } catch(e){}
+    const dao = app.dao();
+    try { dao.deleteCollection(dao.findCollectionByNameOrId("asistencia"));  } catch(e){}
+    try { dao.deleteCollection(dao.findCollectionByNameOrId("estudiantes")); } catch(e){}
+    try { dao.deleteCollection(dao.findCollectionByNameOrId("usuarios"));    } catch(e){}
+    try { dao.deleteCollection(dao.findCollectionByNameOrId("grupos"));      } catch(e){}
+    try { dao.deleteCollection(dao.findCollectionByNameOrId("materias"));    } catch(e){}
 });
