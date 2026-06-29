@@ -15,9 +15,9 @@ RUN npm install postcss tailwindcss autoprefixer
 # Copiar el código fuente completo
 COPY . .
 
-# Compilar forzando la limpieza de caché de optimización de Vite
-# Usamos npx para asegurar la ejecución correcta del build sin bloqueos de Rollup
-RUN npx vite build --force
+# Compilar de forma limpia
+# Eliminamos el flag --force que causaba el error de sintaxis en Vite
+RUN ./node_modules/.bin/vite build
 
 # =====================================================================
 # ETAPA 2: IMAGEN FINAL DE PRODUCCIÓN (PocketBase Servidor)
@@ -39,7 +39,7 @@ RUN mkdir -p /app/pb_public
 COPY --from=frontend-builder /build-app/dist* /app/pb_public/
 COPY --from=frontend-builder /build-app/build* /app/pb_public/
 
-# Copiar las migraciones
+# Copiar las migraciones si existen en el repositorio
 COPY ./pb_migrations ./pb_migrations
 
 EXPOSE 3000
