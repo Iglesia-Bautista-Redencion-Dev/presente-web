@@ -1,49 +1,55 @@
-# ==========================================
-# ETAPA 1: Compilación del Frontend (Node/Vite)
-# ==========================================
+# =====================================================================
+# ETAPA 1: COMPILACIÓN DEL FRONTEND (Node.js & Vite)
+# =====================================================================
+# Usamos una imagen ligera de Node.js para instalar dependencias y compilar
 FROM node:20-alpine AS frontend-builder
 
+# Definimos el directorio de trabajo aislado para la compilación
 WORKDIR /build-app
 
-# Copiar archivos de dependencias primero para aprovechar la caché de Docker
+# Copiamos primero los archivos de dependencias para aprovechar la caché de capas de Docker
 COPY package*.json ./
 
-# Instalar todas las dependencias necesarias
+# Instalamos todas las dependencias declaradas en el package.json
 RUN npm install
 
-# Forzar herramientas de estilos necesarias para Vite/PostCSS
+# Forzamos la instalación de los procesadores de estilos para blindar el empaquetado de Vite
 RUN npm install postcss tailwindcss autoprefixer
 
-# Copiar el resto del código fuente del proyecto
+# Copiamos el resto del código fuente del repositorio al entorno de compilación
 COPY . .
 
-# Compilar el frontend saltándose el chequeo estricto de tipos de TypeScript
+# Ejecutamos el empaquetado de producción omitiendo el chequeo estricto de tipos de TypeScript
 RUN ./node_modules/.bin/vite build
 
-# ==========================================
-# ETAPA 2: Imagen Final de Producción (PocketBase)
-# ==========================================
+# =====================================================================
+# ETAPA 2: IMAGEN FINAL DE PRODUCCIÓN (PocketBase Servidor)
+# =====================================================================
+# Usamos la imagen mínima de Alpine Linux para mantener el contenedor ultra ligero y seguro
 FROM alpine:latest
 
-# Instalar dependencias esenciales de ejecución
+# Instalamos los paquetes mínimos del sistema operativo necesarios para ejecutar binarios y descargar archivos
 RUN apk add --no-cache ca-certificates unzip wget
 
+# Definimos el directorio raíz de la aplicación en producción
 WORKDIR /app
 
-# Descargar e instalar PocketBase de forma limpia
+# Descargamos el motor binario de PocketBase de forma limpia directamente desde su repositorio oficial
 ADD https://github.com/pocketbase/pocketbase/releases/download/v0.22.14/pocketbase_0.22.14_linux_amd64.zip /tmp/pb.zip
 RUN unzip /tmp/pb.zip -d /app/ && rm /tmp/pb.zip
 
-# Copiar únicamente el frontend compilado desde la ETAPA 1
-# Detecta si se generó en 'dist' o 'build' y lo mueve a la carpeta pública de PocketBase
-COPY --from=frontend-builder /build-app/dist* ./pb_public/
-COPY --from=frontend-builder /build-app/build* ./pb_public/
+# Creamos la carpeta pública obligatoria para el frontend estático
+RUN mkdir -p /app/pb_public
 
-# Copiar las migraciones del repositorio directamente al entorno de PocketBase
+# Copiamos el resultado de la ETAPA 1 verificando de forma segura qué carpeta generó Vite (dist o build)
+COPY --from=frontend-builder /build-app/dist* /app/pb_public/
+COPY --from=frontend-builder /build-app/build* /app/pb_public/
+
+# Copiamos la carpeta de migraciones del repositorio directamente al entorno de PocketBase
 COPY ./pb_migrations ./pb_migrations
 
-# Exponer el puerto 3000 configurado en Dokploy
+# Exponemos el puerto de red 3000 exigido por la configuración de Dokploy
 EXPOSE 3000
 
-# Arrancar PocketBase mapeando el volumen persistente y ejecutando las migraciones automáticas
+# Arrancamos PocketBase enlazando el volumen persistente y activando las migraciones automáticas al iniciar
 CMD ["/app/pocketbase", "serve", "--http=0.0.0.0:3000", "--dir=/app/pb_data", "--migrationsDir=/app/pb_migrations"]
